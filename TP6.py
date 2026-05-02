@@ -1,16 +1,23 @@
+import json
 Datos = {"Alumnos": []}
+ 
+
+def leer_json(file_name: str) -> dict:
+    try:
+        with open(file_name, "r", encoding="utf-8") as file:
+            datos = json.load(file)
+    except FileNotFoundError:
+        datos = {"Alumnos": []}
+    return datos
+
+
+def escribir_json(file_name: str, data: list[dict]) -> None:
+
+    with open(file_name,"w") as file:
+        json.dump(data, file)
+
 
 # Funciones
-
-def mostrar_alumnos(datos):
-    if not datos["Alumnos"]:
-        print("No hay alumnos registrados.")
-        return
-    for i, alumno in enumerate(datos["Alumnos"], start=1):
-        print(f"\nAlumno {i}:")
-        for clave, valor in alumno.items():
-            print(f"{clave}: {valor}")
-
 def agregar_alumno(datos):
     nombre = input("Nombre: ")
     apellido = input("Apellido: ")
@@ -70,22 +77,35 @@ def menu():
         print("3. Modificar alumno")
         print("4. Registrar nota")
         print("5. Expulsar alumno")
-        print("6. Salir")
+        print("6. Guardar y salir")
 
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            mostrar_alumnos(Datos)
+            Datos = leer_json("alumnos.json")
+            if not Datos["Alumnos"]:
+                print("No hay alumnos registrados todavía.")
+            else:
+                for i, alumno in enumerate(Datos["Alumnos"], start=1):
+                    print(f"\nAlumno {i}:")
+                    for clave, valor in alumno.items():
+                        print(f"{clave}: {valor}")
+                print()
         elif opcion == "2":
             agregar_alumno(Datos)
+            escribir_json("alumnos.json", Datos["Alumnos"])
         elif opcion == "3":
             modificar_alumno(Datos)
+            escribir_json("alumnos.json", Datos["Alumnos"])
         elif opcion == "4":
             registrar_nota(Datos)
+            escribir_json("alumnos.json", Datos["Alumnos"])
         elif opcion == "5":
             expulsar_alumno(Datos)
+            escribir_json("alumnos.json", Datos["Alumnos"])
         elif opcion == "6":
-            print("sistema cerrado")
+            escribir_json("alumnos.json", Datos["Alumnos"])
+            print("Datos guardados. Saliendo del sistema.")
             break
         else:
             print("Opción inválida, intente nuevamente.")
